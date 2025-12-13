@@ -1,0 +1,44 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.config import get_settings
+from app.database import engine, Base
+from routers import pharmacies
+
+settings = get_settings()
+
+# Créer les tables
+Base.metadata.create_all(bind=engine)
+
+# Application FastAPI
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    description="API pour trouver des médicaments dans les pharmacies proches",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Route principale
+app.include_router(pharmacies.router, prefix=settings.API_V1_PREFIX)
+
+@app.get("/")
+async def root():
+    return {
+        "message": "API VonjiAIna - Trouvez vos médicaments dans les pharmacies les plus proches",
+        "version": "1.0.0",
+        "documentation": "/docs",
+        "endpoint_principal": "/api/v1/pharmacies/search"
+    }
+
+@app.get("/health")
+async def health_check():
+    return {"status": " API opérationnelle"}
