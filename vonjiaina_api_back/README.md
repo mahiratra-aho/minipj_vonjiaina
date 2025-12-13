@@ -4,11 +4,7 @@ API REST pour l'application VonjiAIna - Recherche de médicaments dans les pharm
 
 ## Stack technique
 
-- **FastAPI** : Framework web moderne et rapide
-- **PostgreSQL** : Base de données relationnelle
-- **PostGIS** : Extension pour données géospatiales
-- **SQLAlchemy** : ORM Python
-- **Pydantic** : Validation des données
+-voir requierments.txt
 
 ## Installation
 
@@ -47,7 +43,7 @@ SECRET_KEY=votre-cle-secrete-
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
-Pour la SECRET_key faire : 
+Pour la SECRET_key faire :
 python -c "import secrets; print(secrets.token_urlsafe(32))"
 Puis mettre dans .env
 
