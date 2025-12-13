@@ -66,10 +66,11 @@ L'API sera accessible sur `http://localhost:8000`
 Documentation interactive : `http://localhost:8000/docs`
 
 
-
 ## Endpoints principaux
 
 Pour le moment on reste sur juste la recherche de pharmacies ayant le médicament
 ### Pharmacies
 
 - `GET /api/v1/pharmacies/search` - Rechercher pharmacies avec médicament
+
+Pour plus tard faire plus
