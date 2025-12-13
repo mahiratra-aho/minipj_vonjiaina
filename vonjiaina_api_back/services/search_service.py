@@ -10,11 +10,11 @@ class SearchService:
         medicament: str,
         latitude: float,
         longitude: float,
-        rayon_km: float = 5.0
+        rayon_km: float = 5.0,
+        filtre_statut: str = None  # "garde", "ouverte", ou None
     ) -> List[dict]:
         """
-        Service de recherche des pharmacies
-        Convertit le rayon de km en mètres
+        Service de recherche avec filtre de statut
         """
         rayon_metres = int(rayon_km * 1000)
         
@@ -23,15 +23,13 @@ class SearchService:
             medicament_nom=medicament,
             latitude=latitude,
             longitude=longitude,
-            rayon_metres=rayon_metres
+            rayon_metres=rayon_metres,
+            filtre_statut=filtre_statut
         )
         
         # Enrichir les données
         for pharmacie in pharmacies:
-            # Convertir distance en km avec 2 décimales
             pharmacie['distance_km'] = round(pharmacie['distance'] / 1000, 2)
-            
-            # Arrondir le prix
             if pharmacie.get('prix'):
                 pharmacie['prix'] = round(pharmacie['prix'], 0)
         

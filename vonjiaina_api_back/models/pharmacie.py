@@ -17,8 +17,14 @@ class Pharmacie(Base):
         nullable=False
     )
     
+    # Horaires d'ouverture par jour
+    # Format JSON: {"lundi": {"ouverture": "08:00", "fermeture": "18:00"}, ...}
     horaires = Column(JSON)
+    
     actif = Column(Boolean, default=True)
+    
+    # Type: "normale" ou "garde"
+    type = Column(String(50), default="normale")
     
     created_at = Column(
         DateTime(timezone=True),

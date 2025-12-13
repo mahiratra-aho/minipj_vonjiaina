@@ -13,8 +13,8 @@ build/
 # OS
 .DS_Store
 Thumbs.db
-venv/
-.venv/
+# venv/
+# .venv/
 env/
 __pycache__/
 *.pyc
