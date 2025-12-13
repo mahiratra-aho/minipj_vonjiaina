@@ -69,46 +69,11 @@ L'API sera accessible sur `http://localhost:8000`
 
 Documentation interactive : `http://localhost:8000/docs`
 
-## Architecture
-```
-app/
-├── models/         # Modèles SQLAlchemy (tables DB)
-├── schemas/        # Schémas Pydantic (validation)
-├── repositories/   # Accès aux données (CRUD)
-├── services/       # Logique métier
-├── routers/        # Routes API (endpoints)
-└── utils/          # Fonctions utilitaires
-```
+
 
 ## Endpoints principaux
 
+Pour le moment on reste sur juste la recherche de pharmacies ayant le médicament
 ### Pharmacies
 
 - `GET /api/v1/pharmacies/search` - Rechercher pharmacies avec médicament
-- `GET /api/v1/pharmacies/{id}` - Détails d'une pharmacie
-
-### Médicaments
-
-- `GET /api/v1/medicaments` - Liste des médicaments
-- `GET /api/v1/medicaments/search` - Rechercher un médicament
-
-### Authentification
-
-- `POST /api/v1/auth/register` - Créer un compte
-- `POST /api/v1/auth/login` - Se connecter
-
-## Développement
-
-### Lancer les tests
-```bash
-pytest
-```
-
-### Formater le code
-```bash
-black app/
-```
-
-## Licence
-
-MIT
