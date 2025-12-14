@@ -47,7 +47,7 @@
 ### Fonctionnalités patients/acheteurs/corps médicals
 • Recherche + liste/carte + itinéraire
 • Historique des recherches et ordonnances
-• Scan d’ordonnance (photo → OCR + IA extrait les médicaments)
+• Scan d’ordonnance (photo → OCR + IA extrait les médicaments)// peut être non
 • Réservation / pré-commande du médicament (la pharmacie met de côté 1h ou 2h)
 • Comparateur de prix réel entre pharmacies
 • Notifications push “Votre médicament vient d’arriver dans telle pharmacie”
