@@ -19,7 +19,7 @@ async def rechercher_pharmacies(
     db: Session = Depends(get_db)
 ):
     """
-    🔍 Rechercher les pharmacies avec calcul automatique du statut
+    Rechercher les pharmacies avec calcul automatique du statut
     
     Paramètres:
     - statut: 
