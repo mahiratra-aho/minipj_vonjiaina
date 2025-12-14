@@ -106,7 +106,7 @@ class PharmacyListItem extends StatelessWidget {
                           children: [
                             Icon(Icons.location_on_outlined,
                                 size: 16,
-                                color: AppColors.textSecondary
+                                color: const Color.fromARGB(255, 4, 52, 94)
                                     .withValues(alpha: 0.08)),
                             const SizedBox(width: 6),
                             Expanded(
@@ -114,7 +114,7 @@ class PharmacyListItem extends StatelessWidget {
                                 pharmacie.adresse!,
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: AppColors.textSecondary
+                                  color: const Color.fromARGB(255, 6, 99, 83)
                                       .withValues(alpha: 0.08),
                                   height: 1.3,
                                 ),
@@ -136,7 +136,7 @@ class PharmacyListItem extends StatelessWidget {
                             _buildInfoChip(
                               Icons.near_me,
                               '${pharmacie.distanceKm!.toStringAsFixed(1)} km',
-                              AppColors.primaryLight,
+                              const Color.fromARGB(255, 8, 148, 90),
                             ),
                           if (pharmacie.prix != null)
                             _buildInfoChip(
@@ -200,14 +200,15 @@ class PharmacyListItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+          colors: [Color(0xFF3B82F6), Color.fromARGB(255, 13, 228, 228)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF3B82F6).withValues(alpha: 0.08),
+            color:
+                const Color.fromARGB(213, 4, 143, 120).withValues(alpha: 0.08),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -272,7 +273,7 @@ class PharmacyListItem extends StatelessWidget {
   Widget _buildStatusBadge() {
     final bool isOpen = pharmacie.isOuverte;
     final Color statusColor =
-        isOpen ? AppColors.success : AppColors.textSecondary;
+        isOpen ? AppColors.success : const Color.fromARGB(255, 2, 48, 88);
     final String statusText = isOpen ? 'Ouverte' : 'Fermée';
     final IconData statusIcon = isOpen ? Icons.check_circle : Icons.schedule;
 
