@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../../../data/models/pharmacie_model.dart';
 import 'pharmacy_map_widget.dart';
 
@@ -109,7 +108,7 @@ class PharmacyListItem extends StatelessWidget {
                     child: _buildActionButton(
                       'Itinéraire',
                       Icons.directions,
-                      () => _openGoogleMaps(),
+                      () => _showItinerary(context),
                     ),
                   ),
                 ],
@@ -213,10 +212,9 @@ class PharmacyListItem extends StatelessWidget {
                           Expanded(
                             child: Text(
                               pharmacie.adresse!,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 13,
-                                color: Color.fromARGB(255, 6, 99, 83)
-                                    .withValues(alpha: 0.08),
+                                color: AppColors.textSecondary,
                                 height: 1.3,
                               ),
                               maxLines: 2,
@@ -296,7 +294,7 @@ class PharmacyListItem extends StatelessWidget {
                             child: _buildActionButton(
                               'Itinéraire',
                               Icons.directions,
-                              () => _openGoogleMaps(),
+                              () => _showItinerary(context),
                             ),
                           ),
                         ],
@@ -332,15 +330,96 @@ class PharmacyListItem extends StatelessWidget {
   }
 
   void _openGoogleMaps() async {
-    final url = AppConstants.getGoogleMapsUrl(
-      pharmacie.latitude,
-      pharmacie.longitude,
-    );
+    final url =
+        'https://www.google.com/maps/search/?api=1&query=${pharmacie.latitude},${pharmacie.longitude}';
 
     final uri = Uri.parse(url);
 
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
+  }
+
+  void _showItinerary(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header avec bouton fermer
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Itinéraire vers la pharmacie',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(
+                      Icons.close,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Carte avec itinéraire
+            Expanded(
+              child: PharmacyMapWidget(
+                pharmacie: pharmacie,
+                onClose: () => Navigator.pop(context),
+              ),
+            ),
+
+            // Actions
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildActionButton(
+                      'Appeler',
+                      Icons.phone,
+                      () {
+                        Navigator.pop(context);
+                        _callPharmacy(pharmacie.telephone!);
+                      },
+                      isPrimary: true,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildActionButton(
+                      'Google Maps',
+                      Icons.map,
+                      () {
+                        Navigator.pop(context);
+                        _openGoogleMaps();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

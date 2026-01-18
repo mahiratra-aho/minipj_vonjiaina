@@ -24,32 +24,80 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
   @override
   void initState() {
     super.initState();
-    _createMarker();
+    // Ajouter un délai pour s'assurer que le widget est bien initialisé
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _createMarker();
+      }
+    });
   }
 
   void _createMarker() {
-    final marker = Marker(
-      markerId: MarkerId(widget.pharmacie.id.toString()),
-      position: LatLng(
-        widget.pharmacie.latitude,
-        widget.pharmacie.longitude,
-      ),
-      infoWindow: InfoWindow(
-        title: widget.pharmacie.nom,
-        snippet: widget.pharmacie.adresse ?? '',
-      ),
-      icon: BitmapDescriptor.defaultMarkerWithHue(
-        BitmapDescriptor.hueAzure,
-      ),
-    );
+    // Validation des coordonnées
+    if (widget.pharmacie.latitude == 0 || widget.pharmacie.longitude == 0) {
+      return;
+    }
 
-    setState(() {
-      _markers.add(marker);
-    });
+    try {
+      final marker = Marker(
+        markerId: MarkerId(widget.pharmacie.id.toString()),
+        position: LatLng(
+          widget.pharmacie.latitude,
+          widget.pharmacie.longitude,
+        ),
+        infoWindow: InfoWindow(
+          title: widget.pharmacie.nom,
+          snippet: widget.pharmacie.adresse ?? '',
+        ),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueAzure,
+        ),
+      );
+
+      if (mounted) {
+        setState(() {
+          _markers.add(marker);
+        });
+      }
+    } catch (e) {
+      // Gérer les erreurs de création de marqueur
+      debugPrint('Error creating marker: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Validation des coordonnées avant de construire la carte
+    if (widget.pharmacie.latitude == 0 || widget.pharmacie.longitude == 0) {
+      return Container(
+        height: 300,
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          color: Colors.grey.shade100,
+        ),
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.location_off,
+                size: 48,
+                color: AppColors.textSecondary,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Coordonnées non disponibles',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Container(
       height: 300,
       decoration: BoxDecoration(
