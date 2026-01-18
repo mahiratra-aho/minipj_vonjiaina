@@ -9,7 +9,7 @@ class AuthService:
     
     @staticmethod
     def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
-        """Authentifier un utilisateur"""
+        "Authentifier un utilisateur"
         user = UserRepository.find_by_email(db, email)
         if not user:
             return None
@@ -19,7 +19,7 @@ class AuthService:
     
     @staticmethod
     def register_user(db: Session, user_data: UserCreate) -> User:
-        """Enregistrer un nouvel utilisateur"""
+        "Enregistrer un nouvel utilisateur"
         # Vérifier si l'email existe déjà
         existing_user = UserRepository.find_by_email(db, user_data.email)
         if existing_user:
@@ -42,5 +42,5 @@ class AuthService:
     
     @staticmethod
     def create_token_for_user(user: User) -> str:
-        """Créer un token JWT pour un utilisateur"""
+        "Créer un token JWT pour un utilisateur"
         return create_access_token(data={"sub": user.email, "role": user.role})

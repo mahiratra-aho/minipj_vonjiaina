@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.database import engine, Base
-from routers import pharmacies
+from routers import pharmacies_simple as pharmacies
 
 settings = get_settings()
 
