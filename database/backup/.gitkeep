@@ -1,0 +1,2 @@
+# Ce fichier garantit que le répertoire backup est suivi par Git
+# Les fichiers de sauvegarde SQL seront placés ici

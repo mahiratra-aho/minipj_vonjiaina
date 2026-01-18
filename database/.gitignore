@@ -1,0 +1,10 @@
+# Ne pas commiter les données de développement
+data/
+backup/*.sql
+
+# Fichiers de configuration locaux
+.env
+
+# Fichiers temporaires
+*.log
+*.tmp
