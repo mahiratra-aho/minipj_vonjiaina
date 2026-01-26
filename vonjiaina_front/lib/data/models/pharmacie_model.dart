@@ -12,7 +12,7 @@ class PharmacieModel {
   final int? quantite;
   final String? nomCommercial;
   final String? prochaineOuverture;
-  
+
   PharmacieModel({
     required this.id,
     required this.nom,
@@ -28,10 +28,42 @@ class PharmacieModel {
     this.nomCommercial,
     this.prochaineOuverture,
   });
-  
+
   bool get isGarde => type == 'garde';
   bool get isOuverte => statut == 'ouverte' || statut == 'garde';
-  
+
+  PharmacieModel copyWith({
+    int? id,
+    String? nom,
+    String? adresse,
+    String? telephone,
+    String? type,
+    String? statut,
+    double? latitude,
+    double? longitude,
+    double? distanceKm,
+    double? prix,
+    int? quantite,
+    String? nomCommercial,
+    String? prochaineOuverture,
+  }) {
+    return PharmacieModel(
+      id: id ?? this.id,
+      nom: nom ?? this.nom,
+      adresse: adresse ?? this.adresse,
+      telephone: telephone ?? this.telephone,
+      type: type ?? this.type,
+      statut: statut ?? this.statut,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      distanceKm: distanceKm ?? this.distanceKm,
+      prix: prix ?? this.prix,
+      quantite: quantite ?? this.quantite,
+      nomCommercial: nomCommercial ?? this.nomCommercial,
+      prochaineOuverture: prochaineOuverture ?? this.prochaineOuverture,
+    );
+  }
+
   factory PharmacieModel.fromJson(Map<String, dynamic> json) {
     return PharmacieModel(
       id: json['id'] as int,
@@ -42,12 +74,10 @@ class PharmacieModel {
       statut: json['statut'] as String? ?? 'fermée',
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
-      distanceKm: json['distance_km'] != null 
-          ? (json['distance_km'] as num).toDouble() 
-          : null,
-      prix: json['prix'] != null 
-          ? (json['prix'] as num).toDouble() 
-          : null,
+      distanceKm: json['distance_km'] != null
+          ? (json['distance_km'] as num).toDouble()
+          : (json['distance'] as num?)?.toDouble(),
+      prix: json['prix'] != null ? (json['prix'] as num).toDouble() : null,
       quantite: json['quantite'] as int?,
       nomCommercial: json['nom_commercial'] as String?,
       prochaineOuverture: json['prochaine_ouverture'] as String?,

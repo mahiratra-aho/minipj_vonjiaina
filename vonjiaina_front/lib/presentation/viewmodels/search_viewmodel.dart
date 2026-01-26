@@ -3,7 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../data/models/pharmacie_model.dart';
 import '../../data/repositories/pharmacie_repository.dart';
 import '../../core/services/location_service.dart';
-import '../../core/services/error_service.dart';
+import '../../core/utils/helpers.dart';
 
 enum SearchState { initial, loadingLocation, loading, success, error, empty }
 
@@ -42,15 +42,8 @@ class SearchViewModel extends ChangeNotifier {
 
   Future<void> searchWithAutoLocation(String medicament) async {
     if (medicament.trim().isEmpty) {
-      final error = AppError(
-        userMessage: 'Veuillez entrer un nom de médicament',
-        technicalMessage: 'Empty search query',
-        type: ErrorType.validation,
-      );
-      _errorMessage = error.userMessage;
+      _errorMessage = 'Veuillez entrer un nom de médicament';
       _state = SearchState.error;
-      ErrorService.logError(error,
-          context: 'SearchViewModel.searchWithAutoLocation');
       notifyListeners();
       return;
     }
@@ -65,16 +58,9 @@ class SearchViewModel extends ChangeNotifier {
       _currentPosition = await _locationService.getCurrentPosition();
 
       if (_currentPosition == null) {
-        final error = AppError(
-          userMessage:
-              'Impossible d\'obtenir votre position\nActivez le GPS et réessayez',
-          technicalMessage: 'Location service returned null position',
-          type: ErrorType.location,
-        );
         _state = SearchState.error;
-        _errorMessage = error.userMessage;
-        ErrorService.logError(error,
-            context: 'SearchViewModel.searchWithAutoLocation');
+        _errorMessage =
+            '📍 Impossible d\'obtenir votre position.\nActivez le GPS et réessayez.';
         notifyListeners();
         return;
       }
@@ -90,22 +76,32 @@ class SearchViewModel extends ChangeNotifier {
         rayonKm: 10.0,
       );
 
+      // Calculer les distances si elles ne sont pas déjà fournies par l'API
+      _allPharmacies = _allPharmacies.map((pharmacie) {
+        if (pharmacie.distanceKm == null) {
+          final distance = LocationHelper.calculateDistance(
+            _currentPosition!.latitude,
+            _currentPosition!.longitude,
+            pharmacie.latitude,
+            pharmacie.longitude,
+          );
+          return pharmacie.copyWith(distanceKm: distance);
+        }
+        return pharmacie;
+      }).toList();
+
       // 3. Appliquer le filtre actuel
       _applyFilter();
 
       if (_filteredPharmacies.isEmpty) {
         _state = SearchState.empty;
-        _errorMessage =
-            'Aucune pharmacie trouvée avec "$medicament"\nEssayez un autre nom de médicament';
+        _errorMessage = 'Aucune pharmacie trouvée avec "$medicament"';
       } else {
         _state = SearchState.success;
       }
     } catch (e) {
-      final appError = ErrorService.handleError(e);
       _state = SearchState.error;
-      _errorMessage = appError.userMessage;
-      ErrorService.logError(appError,
-          context: 'SearchViewModel.searchWithAutoLocation');
+      _errorMessage = 'Erreur : ${e.toString()}';
     }
 
     notifyListeners();

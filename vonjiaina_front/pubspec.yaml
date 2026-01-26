@@ -16,33 +16,18 @@ dependencies:
   url_launcher: ^6.2.2
   intl: ^0.20.2
   logging: ^1.2.0
-  flutter_secure_storage: ^9.0.0
-  crypto: ^3.0.3
-  local_auth: ^2.2.0
-  encrypt: ^5.0.3
-  pointycastle: ^3.7.3
-  device_info_plus: ^9.1.1
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
   google_maps_flutter: ^2.14.0
-  dio: ^5.9.0
-  package_info_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/images/
-
-flutter_launcher_icons:
-  android: true
-  ios: false
-  image_path: "assets/images/logo.png"
-  min_sdk_android: 21
-  adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "assets/images/logo.png"
   

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+<<<<<<< HEAD
+=======
+import 'package:logging/logging.dart';
+>>>>>>> main
 import '../../../../core/constants/app_colors.dart';
 import '../../../../data/models/pharmacie_model.dart';
 
@@ -18,12 +22,21 @@ class PharmacyMapWidget extends StatefulWidget {
 }
 
 class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
+<<<<<<< HEAD
   GoogleMapController? _mapController;
   final Set<Marker> _markers = {};
+=======
+  static final _log = Logger('PharmacyMapWidget');
+  GoogleMapController? _mapController;
+  final Set<Marker> _markers = {};
+  bool _isMapLoading = true;
+  String? _error;
+>>>>>>> main
 
   @override
   void initState() {
     super.initState();
+<<<<<<< HEAD
     // Ajouter un délai pour s'assurer que le widget est bien initialisé
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -38,6 +51,14 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
       return;
     }
 
+=======
+    _log.info(
+        'Initialisation de la carte pour la pharmacie: ${widget.pharmacie.nom}');
+    _createMarker();
+  }
+
+  void _createMarker() {
+>>>>>>> main
     try {
       final marker = Marker(
         markerId: MarkerId(widget.pharmacie.id.toString()),
@@ -54,6 +75,7 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
         ),
       );
 
+<<<<<<< HEAD
       if (mounted) {
         setState(() {
           _markers.add(marker);
@@ -62,11 +84,41 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
     } catch (e) {
       // Gérer les erreurs de création de marqueur
       debugPrint('Error creating marker: $e');
+=======
+      setState(() {
+        _markers.add(marker);
+        _isMapLoading = false;
+      });
+      _log.info('Marqueur créé avec succès pour ${widget.pharmacie.nom}');
+    } catch (e) {
+      _log.severe('Erreur lors de la création du marqueur: $e');
+      setState(() {
+        _error = 'Erreur de création du marqueur: $e';
+        _isMapLoading = false;
+      });
+    }
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    try {
+      _mapController = controller;
+      _log.info('Carte créée avec succès');
+      setState(() {
+        _isMapLoading = false;
+      });
+    } catch (e) {
+      _log.severe('Erreur lors de la création de la carte: $e');
+      setState(() {
+        _error = 'Erreur de chargement de la carte: $e';
+        _isMapLoading = false;
+      });
+>>>>>>> main
     }
   }
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     // Validation des coordonnées avant de construire la carte
     if (widget.pharmacie.latitude == 0 || widget.pharmacie.longitude == 0) {
       return Container(
@@ -74,11 +126,66 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           color: Colors.grey.shade100,
+=======
+    if (_error != null) {
+      return Container(
+        height: 300,
+        decoration: BoxDecoration(
+          color: Colors.red.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.red.shade200),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error, color: Colors.red.shade400, size: 48),
+              const SizedBox(height: 16),
+              Text(
+                'Erreur de carte',
+                style: TextStyle(
+                  color: Colors.red.shade600,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Vérifiez votre connexion internet',
+                style: TextStyle(
+                  color: Colors.red.shade400,
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _error = null;
+                    _isMapLoading = true;
+                  });
+                  _createMarker();
+                },
+                child: const Text('Réessayer'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_isMapLoading) {
+      return Container(
+        height: 300,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12),
+>>>>>>> main
         ),
         child: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+<<<<<<< HEAD
               Icon(
                 Icons.location_off,
                 size: 48,
@@ -92,6 +199,11 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
                   fontSize: 16,
                 ),
               ),
+=======
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Chargement de la carte...'),
+>>>>>>> main
             ],
           ),
         ),
@@ -123,9 +235,13 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
                 zoom: 15,
               ),
               markers: _markers,
+<<<<<<< HEAD
               onMapCreated: (GoogleMapController controller) {
                 _mapController = controller;
               },
+=======
+              onMapCreated: _onMapCreated,
+>>>>>>> main
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
               zoomControlsEnabled: true,
