@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../../../data/models/pharmacie_model.dart';
+import '../../map/map_screen.dart';
 
 class PharmacyListItem extends StatelessWidget {
   final PharmacieModel pharmacie;
 
-  const PharmacyListItem({
-    super.key,
-    required this.pharmacie,
-  });
+  const PharmacyListItem({super.key, required this.pharmacie});
 
   void _callPharmacy(String phoneNumber) async {
     final Uri uri = Uri.parse('tel:$phoneNumber');
@@ -31,13 +28,12 @@ class PharmacyListItem extends StatelessWidget {
       icon: Icon(icon),
       label: Text(label),
       style: ElevatedButton.styleFrom(
-        backgroundColor:
-            isPrimary ? AppColors.primaryLight : Colors.grey.shade200,
+        backgroundColor: isPrimary
+            ? AppColors.primaryLight
+            : Colors.grey.shade200,
         foregroundColor: isPrimary ? Colors.white : AppColors.textPrimary,
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 0,
       ),
     );
@@ -67,129 +63,118 @@ class PharmacyListItem extends StatelessWidget {
           },
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Bouton Google Maps
-                _buildMapButton(),
-
-                const SizedBox(width: 16),
-
-                // Informations de la pharmacie
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Nom + Badge
-                      Row(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Informations de la pharmacie
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Text(
-                              pharmacie.nom,
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          if (pharmacie.isGarde) _buildGardeBadge(),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      // Adresse
-                      if (pharmacie.adresse != null)
-                        Row(
-                          children: [
-                            Icon(Icons.location_on_outlined,
-                                size: 16,
-                                color: const Color.fromARGB(255, 4, 52, 94)
-                                    .withValues(alpha: 0.08)),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                pharmacie.adresse!,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: const Color.fromARGB(255, 6, 99, 83)
-                                      .withValues(alpha: 0.08),
-                                  height: 1.3,
+                          // Nom + Badge
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  pharmacie.nom,
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                                 ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
                               ),
+                              const SizedBox(width: 8),
+                              if (pharmacie.isGarde) _buildGardeBadge(),
+                            ],
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          // Adresse
+                          if (pharmacie.adresse != null)
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on_outlined,
+                                  size: 16,
+                                  color: AppColors.textSecondary,
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    pharmacie.adresse!,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: AppColors.textPrimary,
+                                      height: 1.3,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
 
-                      const SizedBox(height: 12),
+                          const SizedBox(height: 12),
 
-                      // Distance, Prix, Stock
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
+                          // Distance uniquement
                           if (pharmacie.distanceKm != null)
                             _buildInfoChip(
                               Icons.near_me,
                               '${pharmacie.distanceKm!.toStringAsFixed(1)} km',
                               const Color.fromARGB(255, 8, 148, 90),
                             ),
-                          if (pharmacie.prix != null)
-                            _buildInfoChip(
-                              Icons.payments_outlined,
-                              '${pharmacie.prix!.toStringAsFixed(0)} Ar',
-                              AppColors.accentTeal,
-                            ),
-                          if (pharmacie.quantite != null)
-                            _buildInfoChip(
-                              Icons.inventory_2_outlined,
-                              '${pharmacie.quantite} en stock',
-                              AppColors.success,
-                            ),
+
+                          // Statut (ouvert/fermé)
+                          if (!pharmacie.isGarde) ...[
+                            const SizedBox(height: 8),
+                            _buildStatusBadge(),
+                          ],
                         ],
                       ),
+                    ),
+                  ],
+                ),
 
-                      // Statut (ouvert/fermé)
-                      if (!pharmacie.isGarde) ...[
-                        const SizedBox(height: 8),
-                        _buildStatusBadge(),
-                      ],
-                    ],
-                  ),
+                const SizedBox(height: 16),
+
+                // Boutons d'action
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildActionButton('Appeler', Icons.phone, () {
+                        if (pharmacie.telephone != null) {
+                          _callPharmacy(pharmacie.telephone!);
+                        }
+                      }),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildActionButton(
+                        'Itinéraire',
+                        Icons.directions,
+                        () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  MapScreen(pharmacie: pharmacie),
+                            ),
+                          );
+                        },
+                        isPrimary: true,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMapButton() {
-    return GestureDetector(
-      onTap: _openGoogleMaps,
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          gradient: AppColors.buttonGradient,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.accentTeal.withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: const Icon(
-          Icons.directions,
-          color: Colors.white,
-          size: 28,
         ),
       ),
     );
@@ -207,8 +192,12 @@ class PharmacyListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color:
-                const Color.fromARGB(213, 4, 143, 120).withValues(alpha: 0.08),
+            color: const Color.fromARGB(
+              213,
+              4,
+              143,
+              120,
+            ).withValues(alpha: 0.08),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -217,11 +206,7 @@ class PharmacyListItem extends StatelessWidget {
       child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.shield_outlined,
-            size: 14,
-            color: Colors.white,
-          ),
+          Icon(Icons.shield_outlined, size: 14, color: Colors.white),
           SizedBox(width: 4),
           Text(
             'GARDE',
@@ -243,19 +228,12 @@ class PharmacyListItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.01),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: color.withValues(alpha: 0.03),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.03), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 14,
-            color: color,
-          ),
+          Icon(icon, size: 14, color: color),
           const SizedBox(width: 4),
           Text(
             label,
@@ -272,18 +250,15 @@ class PharmacyListItem extends StatelessWidget {
 
   Widget _buildStatusBadge() {
     final bool isOpen = pharmacie.isOuverte;
-    final Color statusColor =
-        isOpen ? AppColors.success : const Color.fromARGB(255, 2, 48, 88);
+    final Color statusColor = isOpen
+        ? AppColors.success
+        : const Color.fromARGB(255, 2, 48, 88);
     final String statusText = isOpen ? 'Ouverte' : 'Fermée';
     final IconData statusIcon = isOpen ? Icons.check_circle : Icons.schedule;
 
     return Row(
       children: [
-        Icon(
-          statusIcon,
-          size: 14,
-          color: statusColor,
-        ),
+        Icon(statusIcon, size: 14, color: statusColor),
         const SizedBox(width: 4),
         Text(
           statusText,
@@ -305,19 +280,6 @@ class PharmacyListItem extends StatelessWidget {
         ],
       ],
     );
-  }
-
-  void _openGoogleMaps() async {
-    final url = AppConstants.getGoogleMapsUrl(
-      pharmacie.latitude,
-      pharmacie.longitude,
-    );
-
-    final uri = Uri.parse(url);
-
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
   }
 
   void _showPharmacyDetails(BuildContext context) {
@@ -378,11 +340,7 @@ class PharmacyListItem extends StatelessWidget {
 
           // Informations détaillées
           if (pharmacie.adresse != null)
-            _buildDetailRow(
-              Icons.location_on,
-              'Adresse',
-              pharmacie.adresse!,
-            ),
+            _buildDetailRow(Icons.location_on, 'Adresse', pharmacie.adresse!),
 
           if (pharmacie.telephone != null)
             _buildDetailRow(
@@ -419,28 +377,24 @@ class PharmacyListItem extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _buildActionButton(
-                  'Appeler',
-                  Icons.phone,
-                  () {
-                    Navigator.pop(context);
-                    if (pharmacie.telephone != null) {
-                      _callPharmacy(pharmacie.telephone!);
-                    }
-                  },
-                ),
+                child: _buildActionButton('Appeler', Icons.phone, () {
+                  Navigator.pop(context);
+                  if (pharmacie.telephone != null) {
+                    _callPharmacy(pharmacie.telephone!);
+                  }
+                }),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildActionButton(
-                  'Itinéraire',
-                  Icons.directions,
-                  () {
-                    Navigator.pop(context);
-                    _openGoogleMaps();
-                  },
-                  isPrimary: true,
-                ),
+                child: _buildActionButton('Itinéraire', Icons.directions, () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MapScreen(pharmacie: pharmacie),
+                    ),
+                  );
+                }, isPrimary: true),
               ),
             ],
           ),
@@ -464,49 +418,47 @@ class PharmacyListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: Row(children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                gradient: AppColors.decorGradient,
-                borderRadius: BorderRadius.circular(10),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  gradient: AppColors.decorGradient,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 20, color: Colors.white),
               ),
-              child: Icon(
-                icon,
-                size: 20,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary.withValues(alpha: 0.07),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary.withValues(alpha: 0.07),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    value,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                    const SizedBox(height: 2),
+                    Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            if (onTap != null)
-              Icon(
-                Icons.chevron_right,
-                color: AppColors.textSecondary.withValues(alpha: 0.05),
-              ),
-          ]),
+              if (onTap != null)
+                Icon(
+                  Icons.chevron_right,
+                  color: AppColors.textSecondary.withValues(alpha: 0.05),
+                ),
+            ],
+          ),
         ),
       ),
     );
