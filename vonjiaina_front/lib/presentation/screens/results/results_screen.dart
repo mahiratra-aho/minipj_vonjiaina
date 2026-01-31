@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../viewmodels/search_viewmodel.dart';
+import '../../widgets/error_widget.dart';
 import 'widgets/pharmacy_list_item.dart';
 
 class ResultsScreen extends StatefulWidget {
@@ -333,111 +334,18 @@ class _ResultsScreenState extends State<ResultsScreen> {
   }
 
   Widget _buildEmptyState(String? message) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.decorLight.withValues(alpha: 0.3),
-                  width: 2,
-                ),
-              ),
-              child: Icon(
-                Icons.search_off,
-                size: 60,
-                color: AppColors.textSecondary.withValues(alpha: 0.5),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              message ?? 'Aucun résultat',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Essayez une autre recherche',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary.withValues(alpha: 0.7),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return EmptyStateWidget(
+      message: message ??
+          'Aucune pharmacie trouvée\nEssayez un autre nom de médicament',
+      icon: Icons.search_off,
+      onAction: _onNewSearch,
     );
   }
 
   Widget _buildErrorState(String? message) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.error_outline,
-                size: 60,
-                color: AppColors.error,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              message ?? 'Une erreur est survenue',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.error,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: 200,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: AppColors.buttonGradient,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ElevatedButton(
-                  onPressed: _onNewSearch,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Réessayer',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return AppErrorWidget(
+      errorMessage: message,
+      onRetry: _onNewSearch,
     );
   }
 

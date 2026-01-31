@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: vonjiaina_postgres
+    environment:
+      POSTGRES_DB: vonjiaina_db
+      POSTGRES_USER: vonjiaina_user
+      POSTGRES_PASSWORD: vonjiaina_2026
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./schema:/docker-entrypoint-initdb.d/01-schema
+      - ./seeds:/docker-entrypoint-initdb.d/02-seeds
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

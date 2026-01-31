@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:15
+    container_name: vonjiaina_postgres
+    environment:
+      POSTGRES_DB: vonjiaina_db
+      POSTGRES_USER: vonjiaina_user
+      POSTGRES_PASSWORD: vonjiaina_2026
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
+      - ./database/schema:/docker-entrypoint-initdb.d/01-schema
+      - ./database/seeds:/docker-entrypoint-initdb.d/02-seeds
+    restart: unless-stopped
+    networks:
+      - vonjiaina_network
+
+  # API Backend FastAPI
+  backend:
+    build:
+      context: ./minipj/vonjiaina_api_back
+      dockerfile: Dockerfile
+    container_name: vonjiaina_backend
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql://vonjiaina_user:vonjiaina_2026@postgres:5432/vonjiaina_db
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - vonjiaina_network
+    volumes:
+      - ./minipj/vonjiaina_api_back:/app
+
+  # Frontend Flutter (optionnel - pour développement)
+  frontend:
+    build:
+      context: ./minipj/vonjiaina_front
+      dockerfile: Dockerfile
+    container_name: vonjiaina_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - vonjiaina_network
+    profiles:
+      - frontend  # Utiliser: docker compose --profile frontend up
+
+networks:
+  vonjiaina_network:
+    driver: bridge
