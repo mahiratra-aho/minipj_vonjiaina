@@ -7,6 +7,8 @@ import 'data/repositories/pharmacie_repository.dart';
 import 'presentation/viewmodels/search_viewmodel.dart';
 import 'presentation/screens/splash/splash_screen.dart';
 import 'package:logging/logging.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -90,4 +92,5 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+
 }

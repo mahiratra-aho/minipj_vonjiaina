@@ -2,7 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.database import engine, Base
-from routers import pharmacies
+from routers import pharmacies, auth, medicaments, devices
+from utils.firebase_client import init_firebase
+
+settings = get_settings()
+
+# Initialize Firebase if configured
+init_firebase()
 
 settings = get_settings()
 
@@ -35,6 +41,12 @@ app.add_middleware(
 
 # Route principale
 app.include_router(pharmacies.router, prefix=settings.API_V1_PREFIX)
+app.include_router(auth.router, prefix=settings.API_V1_PREFIX)
+app.include_router(medicaments.router, prefix=settings.API_V1_PREFIX)
+app.include_router(devices.router, prefix=settings.API_V1_PREFIX)
+# Admin routes (protected)
+from routers import admin as admin_router
+app.include_router(admin_router.router, prefix=settings.API_V1_PREFIX)
 
 @app.get("/")
 async def root():

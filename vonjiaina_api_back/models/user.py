@@ -17,7 +17,11 @@ class User(Base):
     pharmacie_id = Column(Integer, nullable=True)
     
     is_active = Column(Boolean, default=True)
-    
+
+    # 2FA TOTP fields
+    totp_enabled = Column(Boolean, default=False)
+    totp_secret = Column(String(512), nullable=True)
+
     created_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc)

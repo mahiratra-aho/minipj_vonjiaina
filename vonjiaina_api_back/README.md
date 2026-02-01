@@ -73,4 +73,10 @@ Pour le moment on reste sur juste la recherche de pharmacies ayant le médicamen
 
 - `GET /api/v1/pharmacies/search` - Rechercher pharmacies avec médicament
 
+## Firestore sync (optionnel)
+
+- Utilitaire : `scripts/sync_firestore.py` — synchronise `pharmacies` et `users` vers Firestore.
+- Exigences : définir `FIREBASE_CREDENTIALS_PATH` (chemin JSON du service account) et `FIREBASE_PROJECT_ID`.
+- Voir `docs/FIREBASE.md` pour configuration et bonnes pratiques.
+
 Pour plus tard faire plus

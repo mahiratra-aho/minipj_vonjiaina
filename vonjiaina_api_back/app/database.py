@@ -18,6 +18,10 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Base pour les modèles
 Base = declarative_base()
 
+# Importer les modèles pour s'assurer qu'ils sont enregistrés dans Base.metadata
+# (important pour create_all dans des environnements de test qui utilisent un engine séparé)
+import models  # noqa: F401
+
 # Dépendance pour obtenir la session DB
 def get_db():
     db = SessionLocal()

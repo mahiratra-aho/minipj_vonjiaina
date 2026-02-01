@@ -57,7 +57,7 @@ class PharmacieRepository:
             if statut_actuel == 'garde':
                 pharmacie['statut'] = 'garde'
             else:
-                pharmacie['statut'] = 'ouverte'  # Simplifié
+                pharmacie['statut'] = 'ouverte'
             
             pharmacies.append(pharmacie)
         

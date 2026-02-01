@@ -13,7 +13,11 @@ class Settings(BaseSettings):
     # API
     API_V1_PREFIX: str = "/api/v1"
     PROJECT_NAME: str = "VonjiAIna API"
-    
+
+    # Firebase
+    FIREBASE_CREDENTIALS_PATH: str | None = None
+    FIREBASE_PROJECT_ID: str | None = None
+
     class Config:
         env_file = ".env"
 

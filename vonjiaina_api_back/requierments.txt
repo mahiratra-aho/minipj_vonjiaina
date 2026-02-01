@@ -12,3 +12,7 @@ python-jose[cryptography]
 python-multipart
 pylance
 pytz
+firebase-admin
+pytest
+pyotp
+

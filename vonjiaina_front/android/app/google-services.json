@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "338216089950",
+    "project_id": "vonjiaina-geit",
+    "storage_bucket": "vonjiaina-geit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338216089950:android:3f0ef9e2b0665fa4d6f7cf",
+        "android_client_info": {
+          "package_name": "com.example.vonjiaina_front"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAJ8mnjdKIw56cwJVbwZjZ8yNmfAV_OXg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

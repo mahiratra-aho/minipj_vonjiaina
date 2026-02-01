@@ -7,8 +7,8 @@
             "port": 5432,
             "driver": "PostgreSQL",
             "name": "vonjiainaConnexion",
-            "database": "vonjiaina_DB",
-            "username": "vonjiainaAdmin",
+            "database": "vonjiaina_db",
+            "username": "vonjiainaadmin",
             "password": "SNHW4390"
         }
     ]
