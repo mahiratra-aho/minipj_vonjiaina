@@ -42,10 +42,76 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Fonction TEMPORAIRE pour les rappels
+  void _showRappelsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Rappels Médicaments'),
+        content: SizedBox(
+          height: 300,
+          child: Column(
+            children: [
+              const Icon(Icons.notifications_active, size: 60, color: Colors.blue),
+              const SizedBox(height: 20),
+              _buildFeatureItem('✓ Ajoutez vos médicaments'),
+              _buildFeatureItem('✓ Configurez des rappels quotidiens'),
+              _buildFeatureItem('✓ Modifiez les heures à votre convenance'),
+              _buildFeatureItem('✓ Recevez des notifications'),
+              const SizedBox(height: 20),
+              const Text(
+                'Cette fonctionnalité sera pleinement opérationnelle dans la prochaine mise à jour.',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Compris'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle, color: Colors.green, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 14),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      // BOUTON FLOTTANT POUR LES RAPPELS
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showRappelsDialog,
+        backgroundColor: AppColors.primaryLight,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.notifications_active),
+        label: const Text('Mes Rappels'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        elevation: 4,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -62,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primaryLight.withValues(alpha: 0.03),
+                        color: AppColors.primaryLight.withOpacity(0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -122,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.01),
+                        color: Colors.black.withOpacity(0.1),
                         blurRadius: 20,
                         offset: const Offset(0, 5),
                       ),
@@ -137,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: InputDecoration(
                       hintText: 'Mon médicament',
                       hintStyle: TextStyle(
-                        color: AppColors.textSecondary.withValues(alpha: 0.5),
+                        color: AppColors.textSecondary.withOpacity(0.5),
                       ),
                       prefixIcon: ShaderMask(
                         shaderCallback: (bounds) =>
@@ -186,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.accentTeal.withValues(alpha: 0.4),
+                          color: AppColors.accentTeal.withOpacity(0.4),
                           blurRadius: 15,
                           offset: const Offset(0, 8),
                         ),
@@ -227,14 +293,77 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const SizedBox(height: 40),
 
+                // Section Rappels (optionnelle)
+                GestureDetector(
+                  onTap: _showRappelsDialog,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: Colors.blue.shade100,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLight,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.notifications_active,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Rappels Médicaments',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.primaryDark,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Fonctionnalité en cours de développement',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          color: AppColors.primaryDark,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
                 // Info supplémentaire
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.decorVeryLight.withValues(alpha: 0.1),
+                    color: AppColors.decorVeryLight.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
-                      color: AppColors.decorLight.withValues(alpha: 0.3),
+                      color: AppColors.decorLight.withOpacity(0.3),
                       width: 1,
                     ),
                   ),

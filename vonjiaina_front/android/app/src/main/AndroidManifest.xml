@@ -5,10 +5,18 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     
+    <!-- Permissions pour les notifications -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    
     <application
         android:label="VonjiAIna"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true">
         
         <activity
             android:name=".MainActivity"
@@ -30,6 +38,25 @@
             </intent-filter>
         </activity>
         
+        <!-- Receivers pour les notifications programmées -->
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"/>
+        
+        <!-- Service pour les notifications -->
+        <service
+            android:name="com.dexterous.flutterlocalnotifications.ForegroundService"
+            android:foregroundServiceType="remoteNotification"
+            android:exported="false" />
+            
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
