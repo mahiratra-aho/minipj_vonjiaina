@@ -36,6 +36,89 @@ class ApiService {
     }
   }
 
+  Future<dynamic> post(String endpoint, {Map<String, dynamic>? data}) async {
+    try {
+      final uri = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+
+      _logger.warning('ApiService: POST Request: $uri');
+      _logger.warning('ApiService: Data: ${data ?? {}}');
+
+      final response = await _client
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: data != null ? json.encode(data) : null,
+          )
+          .timeout(ApiConstants.connectTimeout);
+
+      _logger.warning('ApiService: Response Status: ${response.statusCode}');
+      _logger.warning('ApiService: Response Body: ${response.body}');
+
+      return _handleResponse(response);
+    } catch (e, stackTrace) {
+      _logger.warning('ApiService: Error: $e');
+      _logger.warning('ApiService: StackTrace: $stackTrace');
+      throw _handleError(e);
+    }
+  }
+
+  Future<dynamic> put(String endpoint, {Map<String, dynamic>? data}) async {
+    try {
+      final uri = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+
+      _logger.warning('ApiService: PUT Request: $uri');
+      _logger.warning('ApiService: Data: ${data ?? {}}');
+
+      final response = await _client
+          .put(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: data != null ? json.encode(data) : null,
+          )
+          .timeout(ApiConstants.connectTimeout);
+
+      _logger.warning('ApiService: Response Status: ${response.statusCode}');
+      _logger.warning('ApiService: Response Body: ${response.body}');
+
+      return _handleResponse(response);
+    } catch (e, stackTrace) {
+      _logger.warning('ApiService: Error: $e');
+      _logger.warning('ApiService: StackTrace: $stackTrace');
+      throw _handleError(e);
+    }
+  }
+
+  Future<dynamic> delete(String endpoint) async {
+    try {
+      final uri = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+
+      _logger.warning('ApiService: DELETE Request: $uri');
+
+      final response = await _client.delete(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ).timeout(ApiConstants.connectTimeout);
+
+      _logger.warning('ApiService: Response Status: ${response.statusCode}');
+      _logger.warning('ApiService: Response Body: ${response.body}');
+
+      return _handleResponse(response);
+    } catch (e, stackTrace) {
+      _logger.warning('ApiService: Error: $e');
+      _logger.warning('ApiService: StackTrace: $stackTrace');
+      throw _handleError(e);
+    }
+  }
+
   dynamic _handleResponse(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       try {

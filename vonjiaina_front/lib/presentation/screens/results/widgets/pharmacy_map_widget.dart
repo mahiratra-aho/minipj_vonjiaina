@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-<<<<<<< HEAD
-=======
 import 'package:logging/logging.dart';
->>>>>>> main
-import '../../../../core/constants/app_colors.dart';
-import '../../../../data/models/pharmacie_model.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../data/models/pharmacie_model.dart';
 
 class PharmacyMapWidget extends StatefulWidget {
   final PharmacieModel pharmacie;
