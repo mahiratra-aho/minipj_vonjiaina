@@ -15,6 +15,10 @@ void main() {
       '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}',
     );
   });
+
+  // Activer debugPrintRebuildDirtyWidgets pour le débogage
+  debugPrintRebuildDirtyWidgets = true;
+
   runApp(const MyApp());
 }
 

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logging/logging.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../data/models/pharmacie_model.dart';
 
 class PharmacyMapWidget extends StatefulWidget {
-  final PharmacieModel pharmacie;
+  final Map<String, dynamic> pharmacie;
   final VoidCallback? onClose;
 
   const PharmacyMapWidget({
@@ -19,74 +17,42 @@ class PharmacyMapWidget extends StatefulWidget {
 }
 
 class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
-<<<<<<< HEAD
-  GoogleMapController? _mapController;
-  final Set<Marker> _markers = {};
-=======
   static final _log = Logger('PharmacyMapWidget');
   GoogleMapController? _mapController;
   final Set<Marker> _markers = {};
   bool _isMapLoading = true;
   String? _error;
->>>>>>> main
 
   @override
   void initState() {
     super.initState();
-<<<<<<< HEAD
-    // Ajouter un délai pour s'assurer que le widget est bien initialisé
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _createMarker();
-      }
-    });
-  }
-
-  void _createMarker() {
-    // Validation des coordonnées
-    if (widget.pharmacie.latitude == 0 || widget.pharmacie.longitude == 0) {
-      return;
-    }
-
-=======
     _log.info(
-        'Initialisation de la carte pour la pharmacie: ${widget.pharmacie.nom}');
+        'Initialisation de la carte pour la pharmacie: ${widget.pharmacie['nom']}');
     _createMarker();
   }
 
   void _createMarker() {
->>>>>>> main
     try {
       final marker = Marker(
-        markerId: MarkerId(widget.pharmacie.id.toString()),
+        markerId: MarkerId(widget.pharmacie['id'].toString()),
         position: LatLng(
-          widget.pharmacie.latitude,
-          widget.pharmacie.longitude,
+          widget.pharmacie['latitude']?.toDouble() ?? 0.0,
+          widget.pharmacie['longitude']?.toDouble() ?? 0.0,
         ),
         infoWindow: InfoWindow(
-          title: widget.pharmacie.nom,
-          snippet: widget.pharmacie.adresse ?? '',
+          title: widget.pharmacie['nom'] ?? '',
+          snippet: widget.pharmacie['adresse'] ?? '',
         ),
         icon: BitmapDescriptor.defaultMarkerWithHue(
           BitmapDescriptor.hueAzure,
         ),
       );
 
-<<<<<<< HEAD
-      if (mounted) {
-        setState(() {
-          _markers.add(marker);
-        });
-      }
-    } catch (e) {
-      // Gérer les erreurs de création de marqueur
-      debugPrint('Error creating marker: $e');
-=======
       setState(() {
         _markers.add(marker);
         _isMapLoading = false;
       });
-      _log.info('Marqueur créé avec succès pour ${widget.pharmacie.nom}');
+      _log.info('Marqueur créé avec succès pour ${widget.pharmacie['nom']}');
     } catch (e) {
       _log.severe('Erreur lors de la création du marqueur: $e');
       setState(() {
@@ -109,21 +75,11 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
         _error = 'Erreur de chargement de la carte: $e';
         _isMapLoading = false;
       });
->>>>>>> main
     }
   }
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    // Validation des coordonnées avant de construire la carte
-    if (widget.pharmacie.latitude == 0 || widget.pharmacie.longitude == 0) {
-      return Container(
-        height: 300,
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          color: Colors.grey.shade100,
-=======
     if (_error != null) {
       return Container(
         height: 300,
@@ -176,31 +132,14 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
           borderRadius: BorderRadius.circular(12),
->>>>>>> main
         ),
         child: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-<<<<<<< HEAD
-              Icon(
-                Icons.location_off,
-                size: 48,
-                color: AppColors.textSecondary,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Coordonnées non disponibles',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 16,
-                ),
-              ),
-=======
               CircularProgressIndicator(),
               SizedBox(height: 16),
               Text('Chargement de la carte...'),
->>>>>>> main
             ],
           ),
         ),
@@ -226,25 +165,18 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
             GoogleMap(
               initialCameraPosition: CameraPosition(
                 target: LatLng(
-                  widget.pharmacie.latitude,
-                  widget.pharmacie.longitude,
+                  widget.pharmacie['latitude']?.toDouble() ?? 0.0,
+                  widget.pharmacie['longitude']?.toDouble() ?? 0.0,
                 ),
                 zoom: 15,
               ),
               markers: _markers,
-<<<<<<< HEAD
-              onMapCreated: (GoogleMapController controller) {
-                _mapController = controller;
-              },
-=======
               onMapCreated: _onMapCreated,
->>>>>>> main
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
               zoomControlsEnabled: true,
               mapType: MapType.normal,
             ),
-
             // Bouton pour fermer la carte
             Positioned(
               top: 10,
@@ -271,20 +203,19 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
                   ),
                   child: const Icon(
                     Icons.close,
-                    color: AppColors.textPrimary,
+                    color: Color(0xFF0D1B2A),
                     size: 20,
                   ),
                 ),
               ),
             ),
-
             // Bouton pour centrer sur la pharmacie
             Positioned(
               bottom: 20,
               right: 10,
               child: FloatingActionButton(
                 onPressed: _centerOnPharmacy,
-                backgroundColor: AppColors.accentTeal,
+                backgroundColor: Color(0xFF1B9AAA),
                 child: const Icon(
                   Icons.center_focus_strong,
                   color: Colors.white,
@@ -303,8 +234,8 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(
-              widget.pharmacie.latitude,
-              widget.pharmacie.longitude,
+              widget.pharmacie['latitude']?.toDouble() ?? 0.0,
+              widget.pharmacie['longitude']?.toDouble() ?? 0.0,
             ),
             zoom: 17,
           ),
