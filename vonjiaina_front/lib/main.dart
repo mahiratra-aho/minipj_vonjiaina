@@ -5,6 +5,7 @@ import 'core/services/api_service.dart';
 import 'core/services/location_service.dart';
 import 'data/repositories/pharmacie_repository.dart';
 import 'presentation/viewmodels/search_viewmodel.dart';
+import 'presentation/viewmodels/health_viewmodel.dart';
 import 'presentation/screens/splash/splash_screen.dart';
 import 'package:logging/logging.dart';
 
@@ -40,6 +41,10 @@ class MyApp extends StatelessWidget {
             repository: pharmacieRepository,
             locationService: locationService,
           ),
+        ),
+        // Health ViewModel pour le suivi santé local
+        ChangeNotifierProvider(
+          create: (_) => HealthViewModel(),
         ),
       ],
       child: MaterialApp(

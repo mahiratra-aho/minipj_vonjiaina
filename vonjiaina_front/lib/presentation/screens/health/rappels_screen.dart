@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/services/health_service.dart';
 import '../../../data/models/health_models.dart';
+import '../../../presentation/viewmodels/health_viewmodel.dart' as health;
 
 class RappelsScreen extends StatefulWidget {
   const RappelsScreen({super.key});
@@ -11,56 +12,46 @@ class RappelsScreen extends StatefulWidget {
 }
 
 class _RappelsScreenState extends State<RappelsScreen> {
-  final HealthService _healthService = HealthService();
-  List<MedicamentRappel> _rappels = [];
-  bool _isLoading = true;
+  late HealthViewModel _healthViewModel;
 
   @override
   void initState() {
     super.initState();
-    _loadRappels();
-  }
-
-  Future<void> _loadRappels() async {
-    setState(() => _isLoading = true);
-
-    try {
-      final rappels = await _healthService.getRappels();
-      setState(() {
-        _rappels = rappels;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-    }
+    _healthViewModel = Provider.of<health.HealthViewModel>(context, listen: false);
+    _healthViewModel.loadRappels();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text(
-          'Rappels Médicaments',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+    return Consumer<health.HealthViewModel>(
+      builder: (context, healthViewModel, child) {
+        _healthViewModel = healthViewModel;
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
+            title: const Text(
+              'Rappels Médicaments',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: AppColors.primaryLight,
+            elevation: 0,
+            centerTitle: true,
           ),
-        ),
-        backgroundColor: AppColors.primaryLight,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _rappels.isEmpty
-              ? _buildEmptyState()
-              : _buildRappelsList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddRappelDialog,
-        backgroundColor: AppColors.primaryLight,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+          body: healthViewModel.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : healthViewModel.rappels.isEmpty
+                  ? _buildEmptyState()
+                  : _buildRappelsList(),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _showAddRappelDialog,
+            backgroundColor: AppColors.primaryLight,
+            child: const Icon(Icons.add, color: Colors.white),
+          ),
+        );
+      },
     );
   }
 
@@ -99,9 +90,9 @@ class _RappelsScreenState extends State<RappelsScreen> {
   Widget _buildRappelsList() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: _rappels.length,
+      itemCount: healthViewModel.rappels.length,
       itemBuilder: (context, index) {
-        final rappel = _rappels[index];
+        final rappel = healthViewModel.rappels[index];
         return _buildRappelCard(rappel);
       },
     );
@@ -144,7 +135,7 @@ class _RappelsScreenState extends State<RappelsScreen> {
             ),
             Switch(
               value: rappel.isActive,
-              onChanged: (value) => _toggleRappel(rappel.id),
+              onChanged: (value) => _healthViewModel.toggleRappel(rappel.id),
               activeThumbColor: AppColors.primaryLight,
             ),
           ],
@@ -158,9 +149,14 @@ class _RappelsScreenState extends State<RappelsScreen> {
       context: context,
       builder: (context) => AddRappelDialog(
         onSaved: (rappel) async {
-          final success = await _healthService.addRappel(rappel);
-          if (success) {
-            _loadRappels();
+          final success = await _healthViewModel.addRappel(rappel);
+          if (success && mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('Rappel ajouté avec succès'),
+                backgroundColor: AppColors.success,
+              ),
+            );
           }
         },
       ),
@@ -173,20 +169,18 @@ class _RappelsScreenState extends State<RappelsScreen> {
       builder: (context) => AddRappelDialog(
         existingRappel: rappel,
         onSaved: (rappel) async {
-          final success = await _healthService.updateRappel(rappel);
-          if (success) {
-            _loadRappels();
+          final success = await _healthViewModel.updateRappel(rappel);
+          if (success && mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('Rappel mis à jour avec succès'),
+                backgroundColor: AppColors.success,
+              ),
+            );
           }
         },
       ),
     );
-  }
-
-  Future<void> _toggleRappel(String rappelId) async {
-    final success = await _healthService.toggleRappel(rappelId);
-    if (success) {
-      _loadRappels();
-    }
   }
 }
 
@@ -205,18 +199,18 @@ class AddRappelDialog extends StatefulWidget {
 }
 
 class _AddRappelDialogState extends State<AddRappelDialog> {
-  final _formKey = GlobalKey<FormState>();
-  final _nomController = TextEditingController();
-  final _notesController = TextEditingController();
-  TimeOfDay _heure = const TimeOfDay(hour: 9, minute: 0);
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController nomController = TextEditingController();
+  final TextEditingController notesController = TextEditingController();
+  TimeOfDay heure = const TimeOfDay(hour: 9, minute: 0);
 
   @override
   void initState() {
     super.initState();
     if (widget.existingRappel != null) {
-      _nomController.text = widget.existingRappel!.nomMedicament;
-      _notesController.text = widget.existingRappel!.notes ?? '';
-      _heure = widget.existingRappel!.heure;
+      nomController.text = widget.existingRappel!.nomMedicament;
+      notesController.text = widget.existingRappel!.notes ?? '';
+      heure = widget.existingRappel!.heure;
     }
   }
 
@@ -225,8 +219,7 @@ class _AddRappelDialogState extends State<AddRappelDialog> {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
-        padding:
-            EdgeInsets.all(MediaQuery.of(context).size.width < 400 ? 16 : 24),
+        padding: EdgeInsets.all(MediaQuery.of(context).size.width < 400 ? 16 : 24),
         width: MediaQuery.of(context).size.width * 0.9,
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width < 400
@@ -237,11 +230,9 @@ class _AddRappelDialogState extends State<AddRappelDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.existingRappel != null
-                  ? 'Modifier le rappel'
-                  : 'Nouveau rappel',
-              style: const TextStyle(
+            const Text(
+              'Nouveau rappel',
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -249,12 +240,12 @@ class _AddRappelDialogState extends State<AddRappelDialog> {
             ),
             const SizedBox(height: 24),
             Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
-                    controller: _nomController,
+                    controller: nomController,
                     decoration: InputDecoration(
                       labelText: 'Nom du médicament',
                       border: OutlineInputBorder(
@@ -271,7 +262,7 @@ class _AddRappelDialogState extends State<AddRappelDialog> {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    controller: _notesController,
+                    controller: notesController,
                     decoration: InputDecoration(
                       labelText: 'Notes (optionnel)',
                       border: OutlineInputBorder(
@@ -284,15 +275,15 @@ class _AddRappelDialogState extends State<AddRappelDialog> {
                   const SizedBox(height: 16),
                   ListTile(
                     title: const Text('Heure de prise'),
-                    subtitle: Text(_heure.format(context)),
+                    subtitle: Text(heure.format(context)),
                     trailing: TextButton.icon(
                       onPressed: () async {
                         final time = await showTimePicker(
                           context: context,
-                          initialTime: _heure,
+                          initialTime: heure,
                         );
                         if (time != null) {
-                          setState(() => _heure = time);
+                          heure = time;
                         }
                       },
                       icon: const Icon(Icons.access_time),
@@ -316,14 +307,12 @@ class _AddRappelDialogState extends State<AddRappelDialog> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryLight,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
-                      widget.existingRappel != null ? 'Modifier' : 'Ajouter'),
+                  child: Text(widget.existingRappel != null ? 'Ajouter' : 'Modifier'),
                 ),
               ],
             ),
@@ -334,15 +323,12 @@ class _AddRappelDialogState extends State<AddRappelDialog> {
   }
 
   Future<void> _saveRappel() async {
-    if (_formKey.currentState!.validate()) {
+    if (formKey.currentState!.validate()) {
       final rappel = MedicamentRappel(
-        id: widget.existingRappel?.id ??
-            DateTime.now().millisecondsSinceEpoch.toString(),
-        nomMedicament: _nomController.text.trim(),
-        notes: _notesController.text.trim().isEmpty
-            ? null
-            : _notesController.text.trim(),
-        heure: _heure,
+        id: widget.existingRappel?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        nomMedicament: nomController.text.trim(),
+        notes: notesController.text.trim().isEmpty ? null : notesController.text.trim(),
+        heure: heure,
         isActive: true,
         dateCreation: widget.existingRappel?.dateCreation ?? DateTime.now(),
       );
@@ -350,5 +336,4 @@ class _AddRappelDialogState extends State<AddRappelDialog> {
       widget.onSaved(rappel);
       Navigator.of(context).pop();
     }
-  }
 }

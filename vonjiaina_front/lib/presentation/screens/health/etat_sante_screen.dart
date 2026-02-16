@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/services/health_service.dart';
 import '../../../data/models/health_models.dart';
+import '../../../presentation/viewmodels/health_viewmodel.dart' as health;
 
 class EtatSanteScreen extends StatefulWidget {
   const EtatSanteScreen({super.key});
@@ -11,56 +12,45 @@ class EtatSanteScreen extends StatefulWidget {
 }
 
 class _EtatSanteScreenState extends State<EtatSanteScreen> {
-  final HealthService _healthService = HealthService();
-  List<EtatSante> _etatsSante = [];
-  bool _isLoading = true;
+  late HealthViewModel _healthViewModel;
 
   @override
   void initState() {
     super.initState();
-    _loadEtatsSante();
-  }
-
-  Future<void> _loadEtatsSante() async {
-    setState(() => _isLoading = true);
-
-    try {
-      final etats = await _healthService.getEtatsSante();
-      setState(() {
-        _etatsSante = etats;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-    }
+    _healthViewModel = Provider.of<HealthViewModel>(context, listen: false);
+    _healthViewModel.loadEtatsSante();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text(
-          'État de Santé',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+    return Consumer<health.HealthViewModel>(
+      builder: (context, healthViewModel, child) {
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
+            title: const Text(
+              'État de Santé',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: AppColors.primaryLight,
+            elevation: 0,
+            centerTitle: true,
           ),
-        ),
-        backgroundColor: AppColors.primaryLight,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _etatsSante.isEmpty
-              ? _buildEmptyState()
-              : _buildEtatsSanteList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddEtatSanteDialog,
-        backgroundColor: AppColors.primaryLight,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+          body: healthViewModel.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : healthViewModel.etatsSante.isEmpty
+                  ? _buildEmptyState()
+                  : _buildEtatsSanteList(),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _showAddEtatSanteDialog,
+            backgroundColor: AppColors.primaryLight,
+            child: const Icon(Icons.add, color: Colors.white),
+          ),
+        );
+      },
     );
   }
 
@@ -99,9 +89,9 @@ class _EtatSanteScreenState extends State<EtatSanteScreen> {
   Widget _buildEtatsSanteList() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: _etatsSante.length,
+      itemCount: healthViewModel.etatsSante.length,
       itemBuilder: (context, index) {
-        final etat = _etatsSante[index];
+        final etat = healthViewModel.etatsSante[index];
         return _buildEtatSanteCard(etat);
       },
     );
@@ -118,7 +108,7 @@ class _EtatSanteScreenState extends State<EtatSanteScreen> {
           backgroundColor: etat.humeur.color.withValues(alpha: 0.1),
           child: Text(
             etat.humeur.emoji,
-            style: TextStyle(fontSize: 24),
+            style: const TextStyle(fontSize: 24),
           ),
         ),
         title: Text(
@@ -157,9 +147,14 @@ class _EtatSanteScreenState extends State<EtatSanteScreen> {
       context: context,
       builder: (context) => AddEtatSanteDialog(
         onSaved: (etat) async {
-          final success = await _healthService.addEtatSante(etat);
-          if (success) {
-            _loadEtatsSante();
+          final success = await _healthViewModel.addEtatSante(etat);
+          if (success && mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('État de santé ajouté avec succès'),
+                backgroundColor: AppColors.success,
+              ),
+            );
           }
         },
       ),
@@ -172,9 +167,14 @@ class _EtatSanteScreenState extends State<EtatSanteScreen> {
       builder: (context) => AddEtatSanteDialog(
         existingEtat: etat,
         onSaved: (etat) async {
-          final success = await _healthService.updateEtatSante(etat);
-          if (success) {
-            _loadEtatsSante();
+          final success = await _healthViewModel.updateEtatSante(etat);
+          if (success && mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('État de santé mis à jour avec succès'),
+                backgroundColor: AppColors.success,
+              ),
+            );
           }
         },
       ),
@@ -201,9 +201,14 @@ class _EtatSanteScreenState extends State<EtatSanteScreen> {
     );
 
     if (confirmed == true) {
-      final success = await _healthService.deleteEtatSante(etatId);
-      if (success) {
-        _loadEtatsSante();
+      final success = await _healthViewModel.deleteEtatSante(etatId);
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('État de santé supprimé avec succès'),
+            backgroundColor: AppColors.success,
+          ),
+        );
       }
     }
   }
@@ -224,16 +229,16 @@ class AddEtatSanteDialog extends StatefulWidget {
 }
 
 class _AddEtatSanteDialogState extends State<AddEtatSanteDialog> {
-  final _formKey = GlobalKey<FormState>();
-  final _notesController = TextEditingController();
-  Humeur _humeurSelectionnee = Humeur.neutre;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController notesController = TextEditingController();
+  Humeur humeurSelectionnee = Humeur.neutre;
 
   @override
   void initState() {
     super.initState();
     if (widget.existingEtat != null) {
-      _humeurSelectionnee = widget.existingEtat!.humeur;
-      _notesController.text = widget.existingEtat!.notes ?? '';
+      humeurSelectionnee = widget.existingEtat!.humeur;
+      notesController.text = widget.existingEtat!.notes ?? '';
     }
   }
 
@@ -242,8 +247,7 @@ class _AddEtatSanteDialogState extends State<AddEtatSanteDialog> {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
-        padding:
-            EdgeInsets.all(MediaQuery.of(context).size.width < 400 ? 16 : 24),
+        padding: EdgeInsets.all(MediaQuery.of(context).size.width < 400 ? 16 : 24),
         width: MediaQuery.of(context).size.width * 0.9,
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width < 400
@@ -263,49 +267,51 @@ class _AddEtatSanteDialogState extends State<AddEtatSanteDialog> {
               ),
             ),
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: Humeur.values.map((humeur) {
-                return GestureDetector(
-                  onTap: () => setState(() => _humeurSelectionnee = humeur),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: _humeurSelectionnee == humeur
-                          ? humeur.color.withValues(alpha: 0.2)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: _humeurSelectionnee == humeur
-                            ? humeur.color
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: Humeur.values.map((humeur) {
+                  return GestureDetector(
+                    onTap: () => setState(() => humeurSelectionnee = humeur),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: humeurSelectionnee == humeur
+                            ? humeur.color.withValues(alpha: 0.2)
                             : Colors.transparent,
-                        width: 2,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: humeurSelectionnee == humeur
+                              ? humeur.color
+                              : Colors.transparent,
+                          width: 2,
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          humeur.emoji,
-                          style: const TextStyle(fontSize: 32),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          humeur.label,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: humeur.color,
-                            fontWeight: FontWeight.w600,
+                      child: Column(
+                        children: [
+                          Text(
+                            humeur.emoji,
+                            style: const TextStyle(fontSize: 32),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+                          const SizedBox(height: 4),
+                          Text(
+                            humeur.label,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: humeur.color,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                }).toList(),
+              ),
             ),
             const SizedBox(height: 24),
             TextFormField(
-              controller: _notesController,
+              controller: notesController,
               decoration: InputDecoration(
                 labelText: 'Notes (optionnel)',
                 border: OutlineInputBorder(
@@ -334,7 +340,7 @@ class _AddEtatSanteDialogState extends State<AddEtatSanteDialog> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(widget.existingEtat != null ? 'Modifier' : 'Ajouter'),
+                  child: Text(widget.existingEtat != null ? 'Ajouter' : 'Modifier'),
                 ),
               ],
             ),
@@ -345,11 +351,11 @@ class _AddEtatSanteDialogState extends State<AddEtatSanteDialog> {
   }
 
   Future<void> _saveEtatSante() async {
-    if (_formKey.currentState!.validate()) {
+    if (formKey.currentState!.validate()) {
       final etat = EtatSante(
         id: widget.existingEtat?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-        humeur: _humeurSelectionnee,
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        humeur: humeurSelectionnee,
+        notes: notesController.text.trim().isEmpty ? null : notesController.text.trim(),
         date: widget.existingEtat?.date ?? DateTime.now(),
       );
 
