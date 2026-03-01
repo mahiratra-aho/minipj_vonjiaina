@@ -110,6 +110,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.0"
+<<<<<<< Updated upstream
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -134,6 +135,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.2.0"
+=======
+>>>>>>> Stashed changes
   flutter_map:
     dependency: "direct main"
     description:
@@ -142,6 +145,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.2.1"
+<<<<<<< Updated upstream
   flutter_native_timezone:
     dependency: "direct main"
     description:
@@ -150,6 +154,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+=======
+>>>>>>> Stashed changes
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -244,34 +250,62 @@ packages:
     dependency: "direct main"
     description:
       name: google_maps_flutter
+<<<<<<< Updated upstream
       sha256: "819985697596a42e1054b5feb2f407ba1ac92262e02844a40168e742b9f36dca"
       url: "https://pub.dev"
     source: hosted
     version: "2.14.0"
+=======
+      sha256: "9b0d6dab3de6955837575dc371dd772fcb5d0a90f6a4954e8c066472f9938550"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.14.2"
+>>>>>>> Stashed changes
   google_maps_flutter_android:
     dependency: transitive
     description:
       name: google_maps_flutter_android
+<<<<<<< Updated upstream
       sha256: "98d7f5354f770f3e993db09fc798d40aeb6a254f04c1c468a94818ec2086e83e"
       url: "https://pub.dev"
     source: hosted
     version: "2.18.12"
+=======
+      sha256: "8b569c7abc52bc62d4502bf93847d487c0843f3e6a2a8e122b72e98843b2ab4c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.19.1"
+>>>>>>> Stashed changes
   google_maps_flutter_ios:
     dependency: transitive
     description:
       name: google_maps_flutter_ios
+<<<<<<< Updated upstream
       sha256: "72812231d1c2051a42f1ae82e2860eb761d4b0c01a5d59213d399521fcb8a8d3"
       url: "https://pub.dev"
     source: hosted
     version: "2.17.0"
+=======
+      sha256: "174d730bc3f253e1c06a342d7a5efb216f15003a6e26693c2d70d60973625af4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.17.5"
+>>>>>>> Stashed changes
   google_maps_flutter_platform_interface:
     dependency: transitive
     description:
       name: google_maps_flutter_platform_interface
+<<<<<<< Updated upstream
       sha256: e8b1232419fcdd35c1fdafff96843f5a40238480365599d8ca661dde96d283dd
       url: "https://pub.dev"
     source: hosted
     version: "2.14.1"
+=======
+      sha256: "0f8c6674d70c7e9a09cd34f63b18ebaf8a5822e85b558128eae0fdf02b4a3e93"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.14.2"
+>>>>>>> Stashed changes
   google_maps_flutter_web:
     dependency: transitive
     description:
@@ -320,6 +354,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.20.2"
+<<<<<<< Updated upstream
   js:
     dependency: transitive
     description:
@@ -328,6 +363,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.2"
+=======
+>>>>>>> Stashed changes
   latlong2:
     dependency: "direct main"
     description:
@@ -669,6 +706,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.7"
+<<<<<<< Updated upstream
   timezone:
     dependency: "direct main"
     description:
@@ -677,6 +715,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.4"
+=======
+>>>>>>> Stashed changes
   typed_data:
     dependency: transitive
     description:
@@ -822,5 +862,5 @@ packages:
     source: hosted
     version: "6.6.1"
 sdks:
-  dart: ">=3.9.0 <4.0.0"
-  flutter: ">=3.35.0"
+  dart: ">=3.10.0 <4.0.0"
+  flutter: ">=3.38.0"
