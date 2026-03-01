@@ -5,13 +5,13 @@ import '../../viewmodels/rappel_viewmodel.dart';
 class AjoutRappelScreen extends StatefulWidget {
   final int medicamentId;
   final String medicamentNom;
-  
+
   const AjoutRappelScreen({
     Key? key,
     required this.medicamentId,
     required this.medicamentNom,
   }) : super(key: key);
-  
+
   @override
   _AjoutRappelScreenState createState() => _AjoutRappelScreenState();
 }
@@ -20,11 +20,17 @@ class _AjoutRappelScreenState extends State<AjoutRappelScreen> {
   TimeOfDay _selectedTime = TimeOfDay(hour: 18, minute: 0);
   final List<bool> _selectedDays = List.filled(7, true);
   final TextEditingController _messageController = TextEditingController();
-  
+
   final List<String> _joursSemaine = [
-    'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'
+    'Lundi',
+    'Mardi',
+    'Mercredi',
+    'Jeudi',
+    'Vendredi',
+    'Samedi',
+    'Dimanche'
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,14 +50,13 @@ class _AjoutRappelScreenState extends State<AjoutRappelScreen> {
               ),
             ),
             SizedBox(height: 24),
-            
+
             // Sélection de l'heure
             Card(
               child: ListTile(
                 title: Text('Heure du rappel'),
                 subtitle: Text(
-                  '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}'
-                ),
+                    '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}'),
                 trailing: Icon(Icons.access_time),
                 onTap: () async {
                   final TimeOfDay? pickedTime = await showTimePicker(
@@ -67,7 +72,7 @@ class _AjoutRappelScreenState extends State<AjoutRappelScreen> {
               ),
             ),
             SizedBox(height: 16),
-            
+
             // Jours de répétition
             Card(
               child: Padding(
@@ -105,7 +110,7 @@ class _AjoutRappelScreenState extends State<AjoutRappelScreen> {
               ),
             ),
             SizedBox(height: 16),
-            
+
             // Message personnalisé
             Card(
               child: Padding(
@@ -134,11 +139,11 @@ class _AjoutRappelScreenState extends State<AjoutRappelScreen> {
               ),
             ),
             SizedBox(height: 32),
-            
+
             // Bouton d'ajout
             Center(
               child: ElevatedButton.icon(
-                icon: Icon(Icons.notifications_add),
+                icon: Icon(Icons.notification_add),
                 label: Text('Ajouter le rappel'),
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
@@ -150,19 +155,16 @@ class _AjoutRappelScreenState extends State<AjoutRappelScreen> {
                       joursActifs.add(i + 1);
                     }
                   }
-                  
+
                   if (joursActifs.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Sélectionnez au moins un jour'))
-                    );
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Sélectionnez au moins un jour')));
                     return;
                   }
-                  
-                  final viewModel = Provider.of<RappelViewModel>(
-                    context, 
-                    listen: false
-                  );
-                  
+
+                  final viewModel =
+                      Provider.of<RappelViewModel>(context, listen: false);
+
                   await viewModel.addRappel(
                     medicamentId: widget.medicamentId,
                     heure: _selectedTime,
@@ -171,12 +173,11 @@ class _AjoutRappelScreenState extends State<AjoutRappelScreen> {
                         ? _messageController.text
                         : null,
                   );
-                  
+
                   Navigator.pop(context);
-                  
+
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Rappel ajouté avec succès'))
-                  );
+                      SnackBar(content: Text('Rappel ajouté avec succès')));
                 },
               ),
             ),
